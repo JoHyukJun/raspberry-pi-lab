@@ -1,1 +1,2 @@
-# RasberryPiLab
+# RaspberryPiLab
+### Jo Hyuk Jun
