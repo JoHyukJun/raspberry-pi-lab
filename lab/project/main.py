@@ -24,12 +24,7 @@ class Application(Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        base_folder = os.path.dirname(__file__)
-        image_path = os.path.join(base_folder, 'testimage.png')
-        test = Image.open(image_path)
-        test = test.resize((100, 100), Image.ANTIALIAS)
-        print(image_path)
-        pht = ImageTk.PhotoImage(test)
+        pht = self.read_image()
 
         # self.labeltest = Label(self, image=pht)
         # self.labeltest.image = pht
@@ -138,7 +133,13 @@ class Application(Frame):
         return
 
     def read_image(self):
-        return
+        base_folder = os.path.dirname(__file__)
+        image_path = os.path.join(base_folder, 'testimage.png')
+        test = Image.open(image_path)
+        test = test.resize((100, 100), Image.ANTIALIAS)
+        print(image_path)
+        pht = ImageTk.PhotoImage(test)
+        return pht
 
 
 def main():
