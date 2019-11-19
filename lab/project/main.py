@@ -12,10 +12,19 @@ from menu import Menu
 class Application(Frame):
     def __init__(self, master=None):
         super().__init__(master)
+
+        '''
+            values.
+        '''
         self.total_price = 0
         self.current_menu = []
         self.current_menu_num = []
         self.current_menu_text = StringVar()
+        self.current_page = 0
+
+        '''
+            widgets.
+        '''
         self.master = master
         self.window_settings()
 
@@ -26,10 +35,10 @@ class Application(Frame):
     def create_widgets(self):
         pht = self.read_image()
 
-        # self.labeltest = Label(self, image=pht)
-        # self.labeltest.image = pht
-        # self.labeltest.grid()
 
+        '''
+            8 menu buttons.
+        '''
         self.menu01 = Button(self, image=pht, compound=TOP, text="페페로니 피자\n가격: 10000", command=lambda:self.menu_button_cmd('10000', self.menu01['text']))
         self.menu01.config(width=130, height=130)
         self.menu01.image = pht
@@ -56,8 +65,16 @@ class Application(Frame):
         self.menu08.config(width=15, height=10)
 
 
+        self.page_down = Button(self, text="<<", command=lambda:self.page_button('0'))
+        self.page_down.config(width=30)
+        self.page_up = Button(self, text=">>", command=lambda:self.page_button('1'))
+        self.page_up.config(width=30)
+
+
+        '''
+            current status widgets.
+        '''
         self.current_menu_label = Label(self, textvariable=self.current_menu_text)
-        self.current_menu_label.grid(row=0, column=5, rowspan=2, sticky='n')
 
 
         self.price_entry = Entry(self, width=20)
@@ -69,7 +86,9 @@ class Application(Frame):
         self.refresh_botton = Button(self, text="초기화", command=lambda:self.refresh_button_cmd(''))
         self.refresh_botton.config(width=15, height=3)
 
-        # layout settings.
+        '''
+            layout settings.
+        '''
         self.menu01.grid(row=0, column=1, padx=5, pady=5)
         self.menu02.grid(row=1, column=1, padx=5, pady=5)
         self.menu03.grid(row=0, column=2, padx=5, pady=5)
@@ -78,6 +97,9 @@ class Application(Frame):
         self.menu06.grid(row=1, column=3, padx=5, pady=5)
         self.menu07.grid(row=0, column=4, padx=5, pady=5)
         self.menu08.grid(row=1, column=4, padx=5, pady=5)
+        self.page_down.grid(row=2, column=1, columnspan=2)
+        self.page_up.grid(row=2, column=3, columnspan=2)
+        self.current_menu_label.grid(row=0, column=5, rowspan=2, sticky='n')
         self.price_entry.grid(row=1, column=5, sticky='n')
         self.order_button.grid(row=1, column=5)
         self.refresh_botton.grid(row=2, column=5)
@@ -130,6 +152,9 @@ class Application(Frame):
     
     def order_button_cmd(self, value):
 
+        return
+
+    def page_button(self, value):
         return
 
     def read_image(self):
