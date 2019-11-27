@@ -1,5 +1,8 @@
-# Raspberry Pi Project
+# Raspberry Pi Menu Order System
 ### Author: Jo Hyuk Jun
+## Enviroments
+- Raspberry Pi 3 Model B
+- Raspberry Pi Touch Display(The 7″ touchscreen monitor for Raspberry Pi)
 ## Download
 ```bash
 ./download.sh
