@@ -3,12 +3,25 @@ from __future__ import division
 from __future__ import print_function
 
 from tkinter import *
+from tkinter import messagebox
 from PIL import ImageTk
 from PIL import Image
 import os
 
+import requests
+import json
 from menu import Menu
 
+'''
+    server parameters.
+'''
+STORE_ID = "1"
+MENU_LIST_URL = "http://ec2-54-180-147-209.ap-northeast-2.compute.amazonaws.com/v1/stores/" + STORE_ID + "/menu"
+
+
+'''
+    application class.
+'''
 class Application(Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -21,50 +34,108 @@ class Application(Frame):
         self.current_menu_num = []
         self.current_menu_text = StringVar()
         self.current_page = 0
+        self.MAX_PAGE = 0
+
+        self.total_menu_num = 0
+        self.total_menu_name = []
+        self.total_menu_price = []
+
+        self.display_menu_info_01 = StringVar()
+        self.display_menu_info_02 = StringVar()
+        self.display_menu_info_03 = StringVar()
+        self.display_menu_info_04 = StringVar()
+        self.display_menu_info_05 = StringVar()
+        self.display_menu_info_06 = StringVar()
+        self.display_menu_info_07 = StringVar()
+        self.display_menu_info_08 = StringVar()
 
         '''
             widgets.
         '''
         self.master = master
         self.window_settings()
+        
+        self.get_menu()
 
         #self.pack()
         self.grid()
         self.create_widgets()
+        
+    def get_menu(self):
+        menu_response = requests.get(MENU_LIST_URL)
+        menu_json = menu_response.json()
+
+
+        for item in menu_json:
+            self.total_menu_num += 1
+            self.total_menu_name.append(item['name'])
+            self.total_menu_price.append(str(item['price']))
+            #print(menu_text)
+        
+        while(self.total_menu_num % 8 != 0):
+            self.total_menu_num += 1
+            self.total_menu_name.append("x")
+            self.total_menu_price.append("x")
+
+        self.MAX_PAGE = self.total_menu_num / 8
+            
+        print(self.MAX_PAGE)
+        print(self.total_menu_name)
+        print(self.total_menu_price)
+
+        return
+
 
     def create_widgets(self):
-        pht = self.read_image()
+        # image read test.
+        #pht = self.read_image()
+        
+        '''
+            menu info init.
+        '''
+        self.display_menu_info_01.set(self.total_menu_name[(self.current_page * 8) + 0] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 0])
+        self.display_menu_info_02.set(self.total_menu_name[(self.current_page * 8) + 1] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 1])
+        self.display_menu_info_03.set(self.total_menu_name[(self.current_page * 8) + 2] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 2])
+        self.display_menu_info_04.set(self.total_menu_name[(self.current_page * 8) + 3] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 3])
+        self.display_menu_info_05.set(self.total_menu_name[(self.current_page * 8) + 4] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 4])
+        self.display_menu_info_06.set(self.total_menu_name[(self.current_page * 8) + 5] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 5])
+        self.display_menu_info_07.set(self.total_menu_name[(self.current_page * 8) + 6] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 6])
+        self.display_menu_info_08.set(self.total_menu_name[(self.current_page * 8) + 7] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 7])
+
 
 
         '''
             8 menu buttons.
         '''
-        self.menu01 = Button(self, image=pht, compound=TOP, text="페페로니 피자\n가격: 10000", command=lambda:self.menu_button_cmd('10000', self.menu01['text']))
-        self.menu01.config(width=130, height=130)
-        self.menu01.image = pht
+        self.menu01 = Button(self, compound=TOP, textvariable=self.display_menu_info_01, command=lambda:self.menu_button_cmd(self.total_menu_price[0 + (self.current_page * 8)], self.menu01['text']))
+        self.menu01.config(width=15, height=10)
+        #self.menu01.image = pht
 
-        self.menu02 = Button(self, text="치즈 피자\n가격: 10000", command=lambda:self.menu_button_cmd('10000', self.menu02['text']))
+        self.menu02 = Button(self, textvariable=self.display_menu_info_02, command=lambda:self.menu_button_cmd(self.total_menu_price[1 + (self.current_page * 8)], self.menu02['text']))
         self.menu02.config(width=15, height=10)
 
-        self.menu03 = Button(self, text="포테이토 피자\n가격: 11000", command=lambda:self.menu_button_cmd('11000', self.menu03['text']))
+        self.menu03 = Button(self, textvariable=self.display_menu_info_03, command=lambda:self.menu_button_cmd(self.total_menu_price[2 + (self.current_page * 8)], self.menu03['text']))
         self.menu03.config(width=15, height=10)
 
-        self.menu04 = Button(self, text="불고기 피자\n가격: 11000", command=lambda:self.menu_button_cmd('11000', self.menu04['text']))
+        self.menu04 = Button(self, textvariable=self.display_menu_info_04, command=lambda:self.menu_button_cmd(self.total_menu_price[3 + (self.current_page * 8)], self.menu04['text']))
         self.menu04.config(width=15, height=10)
 
-        self.menu05 = Button(self, text="치즈오븐 스파게티\n가격: 5000", command=lambda:self.menu_button_cmd('5000', self.menu05['text']))
+        self.menu05 = Button(self, textvariable=self.display_menu_info_05, command=lambda:self.menu_button_cmd(self.total_menu_price[4 + (self.current_page * 8)], self.menu05['text']))
         self.menu05.config(width=15, height=10)
 
-        self.menu06 = Button(self, text="콜라\n가격: 2000", command=lambda:self.menu_button_cmd('2000', self.menu06['text']))
+        self.menu06 = Button(self, textvariable=self.display_menu_info_06, command=lambda:self.menu_button_cmd(self.total_menu_price[5 + (self.current_page * 8)], self.menu06['text']))
         self.menu06.config(width=15, height=10)
 
-        self.menu07 = Button(self, text="사이다\n가격: 2000", command=lambda:self.menu_button_cmd('2000', self.menu07['text']))
+        self.menu07 = Button(self, textvariable=self.display_menu_info_07, command=lambda:self.menu_button_cmd(self.total_menu_price[6 + (self.current_page * 8)], self.menu07['text']))
         self.menu07.config(width=15, height=10)
 
-        self.menu08 = Button(self, text="환타\n가격: 2000", command=lambda:self.menu_button_cmd('2000', self.menu08['text']))
+        self.menu08 = Button(self, textvariable=self.display_menu_info_08, command=lambda:self.menu_button_cmd(self.total_menu_price[7 + (self.current_page * 8)], self.menu08['text']))
         self.menu08.config(width=15, height=10)
 
 
+        '''
+            page control widgets.
+        '''
         self.page_down = Button(self, text="<<", command=lambda:self.page_button('0'))
         self.page_down.config(width=30)
         self.page_up = Button(self, text=">>", command=lambda:self.page_button('1'))
@@ -104,14 +175,19 @@ class Application(Frame):
         self.order_button.grid(row=1, column=5)
         self.refresh_botton.grid(row=2, column=5)
 
+
     def window_settings(self):
         self.master.title("test")
         self.master.geometry("800x400+400+240")
         self.master.resizable(False, False)
 
+
     def menu_button_cmd(self, value, text):
         print(value)
         print(text)
+
+        if (value == 'x' or text == 'x'):
+            messagebox.showwarning("warning", "void menu")
 
         temp_str = ""
         temp_cnt = 0
@@ -139,6 +215,7 @@ class Application(Frame):
         self.current_menu_text.set(temp_str)
         return
 
+
     def refresh_button_cmd(self, value):
         self.total_price = 0
         self.price_entry.delete(0, 'end')
@@ -149,13 +226,39 @@ class Application(Frame):
         self.current_menu_num = []
         self.current_menu_text.set("")
         return
+
     
     def order_button_cmd(self, value):
 
         return
 
+
     def page_button(self, value):
+        if (value == '0'):
+            if (self.current_page > 0):
+                self.current_page -= 1
+            else:
+                messagebox.showwarning("warning", "page underflow")
+        elif (value == '1'):
+            if (self.current_page < self.MAX_PAGE):
+                    self.current_page += 1
+            else:
+                messagebox.showwarning("warning", "page overflow")
+
+        '''
+            menu info reset.
+        '''
+        self.display_menu_info_01.set(self.total_menu_name[(self.current_page * 8) + 0] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 0])
+        self.display_menu_info_02.set(self.total_menu_name[(self.current_page * 8) + 1] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 1])
+        self.display_menu_info_03.set(self.total_menu_name[(self.current_page * 8) + 2] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 2])
+        self.display_menu_info_04.set(self.total_menu_name[(self.current_page * 8) + 3] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 3])
+        self.display_menu_info_05.set(self.total_menu_name[(self.current_page * 8) + 4] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 4])
+        self.display_menu_info_06.set(self.total_menu_name[(self.current_page * 8) + 5] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 5])
+        self.display_menu_info_07.set(self.total_menu_name[(self.current_page * 8) + 6] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 6])
+        self.display_menu_info_08.set(self.total_menu_name[(self.current_page * 8) + 7] + "\n가격 " + self.total_menu_price[(self.current_page * 8)+ 7])
+
         return
+
 
     def read_image(self):
         base_folder = os.path.dirname(__file__)
