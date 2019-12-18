@@ -17,6 +17,9 @@ from menu import Menu
 '''
 STORE_ID = "1"
 MENU_LIST_URL = "http://ec2-54-180-147-209.ap-northeast-2.compute.amazonaws.com/v1/stores/" + STORE_ID + "/menu"
+LOGIN_URL = "http://ec2-54-180-147-209.ap-northeast-2.compute.amazonaws.com/v1/accounts/tokens"
+TOKEN = ""
+TOKEN_ACCESS = FALSE
 
 
 '''
@@ -49,6 +52,7 @@ class Application(Frame):
         self.display_menu_info_07 = StringVar()
         self.display_menu_info_08 = StringVar()
 
+
         '''
             widgets.
         '''
@@ -59,7 +63,9 @@ class Application(Frame):
 
         #self.pack()
         self.grid()
+
         self.create_widgets()
+
         
     def get_menu(self):
         menu_response = requests.get(MENU_LIST_URL)
@@ -177,7 +183,7 @@ class Application(Frame):
 
 
     def window_settings(self):
-        self.master.title("test")
+        self.master.title("main")
         self.master.geometry("800x400+400+240")
         self.master.resizable(False, False)
 
@@ -229,6 +235,10 @@ class Application(Frame):
 
     
     def order_button_cmd(self, value):
+        
+
+
+        headers = {'Content-Type': 'application/json; charset=utf-8'}
 
         return
 
@@ -270,7 +280,80 @@ class Application(Frame):
         return pht
 
 
+class Login(Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+
+        '''
+            values.
+        '''
+        self.user_id = StringVar()
+        self.password = StringVar()
+        self.login_flag = StringVar()
+
+        '''
+            widgets.
+        '''
+        self.master = master
+        self.window_settings()
+        
+
+        #self.pack()
+        self.grid()
+        self.login_form()
+    
+    def login_form(self):
+        self.login_flag.set("False")
+
+        self.user_id_label = Label(self, text="ID: ").grid(row=0, column=0)
+        self.user_id_entry = Entry(self, textvariable=self.user_id).grid(row=0, column=1)
+        self.password_label = Label(self, text="Password: ").grid(row=1, column=0)
+        self.password_entry = Entry(self, textvariable=self.password, show='*').grid(row=1, column=1)
+        self.login_button = Button(self, text="Login", command=lambda:self.login_button_cmd()).grid(row=4, column=0)
+
+
+        return
+
+    
+    def login_button_cmd(self):
+
+
+        
+        local_user_id = self.user_id.get()
+        local_password = self.password.get()
+            
+        login_dict = {
+            'id': local_user_id,
+            'password': local_password
+        }
+
+        login_data = json.dumps(login_dict)
+        headers = {'Content-Type': 'application/json; charset=utf-8'}
+
+        print(login_data)
+
+        login_respose = requests.post(LOGIN_URL, data=login_data, headers=headers)
+        print(login_respose.status_code)
+        if (login_respose.status_code == 200):
+            TOKEN = login_respose.text
+            TOKEN_ACCESS = TRUE
+            self.master.destroy()
+            
+
+        return
+
+
+    def window_settings(self):
+        self.master.title("login")
+        self.master.geometry("800x400+400+240")
+        self.master.resizable(False, False)
+
+
 def main():
+    root_login = Tk()
+    login = Login(master=root_login)
+    login.mainloop()
+
     root = Tk()
     app = Application(master=root)
     app.mainloop()
@@ -279,4 +362,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
