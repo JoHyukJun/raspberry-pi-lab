@@ -225,6 +225,7 @@ class Application(Frame):
 
         if (value == 'x' or text == 'x'):
             messagebox.showwarning("warning", "void menu")
+            return
 
         temp_str = ""
         temp_cnt = 0
@@ -263,6 +264,7 @@ class Application(Frame):
         
         self.current_menu = []
         self.current_menu_num = []
+        self.current_menu_id = []
         self.current_menu_text.set("")
         return
 
