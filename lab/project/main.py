@@ -18,8 +18,11 @@ from menu import Menu
 STORE_ID = "1"
 MENU_LIST_URL = "http://ec2-54-180-147-209.ap-northeast-2.compute.amazonaws.com/v1/stores/" + STORE_ID + "/menu"
 LOGIN_URL = "http://ec2-54-180-147-209.ap-northeast-2.compute.amazonaws.com/v1/accounts/tokens"
+ORDER_URL = "http://ec2-54-180-147-209.ap-northeast-2.compute.amazonaws.com/v1/orders"
+
 TOKEN = ""
 TOKEN_ACCESS = FALSE
+
 
 
 '''
@@ -157,7 +160,7 @@ class Application(Frame):
         self.price_entry = Entry(self, width=20)
         self.price_entry.insert(0, "주문금액: 0")
 
-        self.order_button = Button(self, text="주 문")
+        self.order_button = Button(self, text="주 문", command=lambda:self.order_button_cmd(''))
         self.order_button.config(width=15, height=5)
 
         self.refresh_botton = Button(self, text="초기화", command=lambda:self.refresh_button_cmd(''))
@@ -235,10 +238,21 @@ class Application(Frame):
 
     
     def order_button_cmd(self, value):
-        
+        order_dict = {
+            "menus": [
+                {
+                    "amount": 1,
+                    "no": 0
+                }
+            ],
+            "token": TOKEN
+        }
 
-
+        order_data = json.dumps(order_dict)
         headers = {'Content-Type': 'application/json; charset=utf-8'}
+
+        order_response = requests.post(ORDER_URL, data=order_data, headers=headers)
+        print(order_response.text)
 
         return
 
@@ -335,10 +349,13 @@ class Login(Frame):
         login_respose = requests.post(LOGIN_URL, data=login_data, headers=headers)
         print(login_respose.status_code)
         if (login_respose.status_code == 200):
-            TOKEN = login_respose.text
+            temp_token = login_respose.json()
+            TOKEN = temp_token['token']
             TOKEN_ACCESS = TRUE
+            print(TOKEN)
             self.master.destroy()
             
+        
 
         return
 
