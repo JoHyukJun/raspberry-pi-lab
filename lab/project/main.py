@@ -12,6 +12,7 @@ from PIL import Image
 import os
 import requests
 import json
+
 from menu import Menu
 
 '''
@@ -88,6 +89,8 @@ class Application(Frame):
         if (table_response.status_code == 200):
             temp_table_token = table_response.json()
             TABLE_TOKEN = temp_table_token['token']
+        else:
+            messagebox.showerror("error", "table token error")
         
         print(TABLE_TOKEN)
 
@@ -125,7 +128,7 @@ class Application(Frame):
         # image read test.
         #pht = self.read_image()
 
-        jFont = tkinter.font.Font(family="맑은 고딕", size=15, slant="italic")
+        #jFont = tkinter.font.Font(family="맑은 고딕", size=15, slant="italic")
         
         '''
             menu info init.
@@ -144,38 +147,38 @@ class Application(Frame):
         '''
             8 menu buttons.
         '''
-        self.menu01 = Button(self, compound=TOP, textvariable=self.display_menu_info_01, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[0 + (self.current_page * 8)], self.menu01['text'], (self.current_page * 8) + 1))
-        self.menu01.config(width=13, height=8)
+        self.menu01 = Button(self, textvariable=self.display_menu_info_01, command=lambda:self.menu_button_cmd(self.total_menu_price[0 + (self.current_page * 8)], self.menu01['text'], (self.current_page * 8) + 1))
+        self.menu01.config(width=15, height=10)
         #self.menu01.image = pht
 
-        self.menu02 = Button(self, textvariable=self.display_menu_info_02, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[1 + (self.current_page * 8)], self.menu02['text'], (self.current_page * 8) + 2))
-        self.menu02.config(width=13, height=8)
+        self.menu02 = Button(self, textvariable=self.display_menu_info_02, command=lambda:self.menu_button_cmd(self.total_menu_price[1 + (self.current_page * 8)], self.menu02['text'], (self.current_page * 8) + 2))
+        self.menu02.config(width=15, height=10)
 
-        self.menu03 = Button(self, textvariable=self.display_menu_info_03, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[2 + (self.current_page * 8)], self.menu03['text'], (self.current_page * 8) + 3))
-        self.menu03.config(width=13, height=8)
+        self.menu03 = Button(self, textvariable=self.display_menu_info_03, command=lambda:self.menu_button_cmd(self.total_menu_price[2 + (self.current_page * 8)], self.menu03['text'], (self.current_page * 8) + 3))
+        self.menu03.config(width=15, height=10)
 
-        self.menu04 = Button(self, textvariable=self.display_menu_info_04, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[3 + (self.current_page * 8)], self.menu04['text'], (self.current_page * 8) + 4))
-        self.menu04.config(width=13, height=8)
+        self.menu04 = Button(self, textvariable=self.display_menu_info_04, command=lambda:self.menu_button_cmd(self.total_menu_price[3 + (self.current_page * 8)], self.menu04['text'], (self.current_page * 8) + 4))
+        self.menu04.config(width=15, height=10)
 
-        self.menu05 = Button(self, textvariable=self.display_menu_info_05, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[4 + (self.current_page * 8)], self.menu05['text'], (self.current_page * 8) + 5))
-        self.menu05.config(width=13, height=8)
+        self.menu05 = Button(self, textvariable=self.display_menu_info_05, command=lambda:self.menu_button_cmd(self.total_menu_price[4 + (self.current_page * 8)], self.menu05['text'], (self.current_page * 8) + 5))
+        self.menu05.config(width=15, height=10)
 
-        self.menu06 = Button(self, textvariable=self.display_menu_info_06, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[5 + (self.current_page * 8)], self.menu06['text'], (self.current_page * 8) + 6))
-        self.menu06.config(width=13, height=8)
+        self.menu06 = Button(self, textvariable=self.display_menu_info_06, command=lambda:self.menu_button_cmd(self.total_menu_price[5 + (self.current_page * 8)], self.menu06['text'], (self.current_page * 8) + 6))
+        self.menu06.config(width=15, height=10)
 
-        self.menu07 = Button(self, textvariable=self.display_menu_info_07, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[6 + (self.current_page * 8)], self.menu07['text'], (self.current_page * 8) + 7))
-        self.menu07.config(width=13, height=8)
+        self.menu07 = Button(self, textvariable=self.display_menu_info_07, command=lambda:self.menu_button_cmd(self.total_menu_price[6 + (self.current_page * 8)], self.menu07['text'], (self.current_page * 8) + 7))
+        self.menu07.config(width=15, height=10)
 
-        self.menu08 = Button(self, textvariable=self.display_menu_info_08, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[7 + (self.current_page * 8)], self.menu08['text'], (self.current_page * 8) + 8))
-        self.menu08.config(width=13, height=8)
+        self.menu08 = Button(self, textvariable=self.display_menu_info_08, command=lambda:self.menu_button_cmd(self.total_menu_price[7 + (self.current_page * 8)], self.menu08['text'], (self.current_page * 8) + 8))
+        self.menu08.config(width=15, height=10)
 
 
         '''
             page control widgets.
         '''
-        self.page_down = Button(self, text="<<", font=jFont, command=lambda:self.page_button('0'))
+        self.page_down = Button(self, text="<<", command=lambda:self.page_button('0'))
         self.page_down.config(width=30)
-        self.page_up = Button(self, text=">>", font=jFont, command=lambda:self.page_button('1'))
+        self.page_up = Button(self, text=">>", command=lambda:self.page_button('1'))
         self.page_up.config(width=30)
 
 
@@ -215,7 +218,7 @@ class Application(Frame):
 
     def window_settings(self):
         self.master.title("main")
-        self.master.geometry("800x400+400+240")
+        self.master.geometry("800x400+0+0")
         self.master.resizable(False, False)
 
 
@@ -309,11 +312,13 @@ class Application(Frame):
                 self.current_page -= 1
             else:
                 messagebox.showwarning("warning", "page underflow")
+                return
         elif (value == '1'):
             if (self.current_page < self.MAX_PAGE):
                     self.current_page += 1
             else:
                 messagebox.showwarning("warning", "page overflow")
+                return
 
         '''
             menu info reset.
@@ -364,7 +369,7 @@ class Login(Frame):
     
     def login_form(self):
         self.login_flag.set("False")
-        jFont = tkinter.font.Font(family="맑은 고딕", size=30, slant="italic")
+        jFont = tkinter.font.Font(family="맑은 고딕", size=40, slant="italic")
 
         self.user_id_label = Label(self, text="ID: ", font=jFont).grid(row=0, column=0)
         self.user_id_entry = Entry(self, textvariable=self.user_id, font=jFont).grid(row=0, column=1)
@@ -412,7 +417,7 @@ class Login(Frame):
 
     def window_settings(self):
         self.master.title("login")
-        self.master.geometry("800x400+400+240")
+        self.master.geometry("800x400+0+0")
         self.master.resizable(False, False)
 
 
