@@ -4,10 +4,12 @@ from __future__ import print_function
 
 from tkinter import *
 from tkinter import messagebox
+import tkinter.font
+
 from PIL import ImageTk
 from PIL import Image
-import os
 
+import os
 import requests
 import json
 from menu import Menu
@@ -16,11 +18,14 @@ from menu import Menu
     server parameters.
 '''
 STORE_ID = "1"
+TABLE_ID = "1"
 MENU_LIST_URL = "http://ec2-54-180-147-209.ap-northeast-2.compute.amazonaws.com/v1/stores/" + STORE_ID + "/menu"
 LOGIN_URL = "http://ec2-54-180-147-209.ap-northeast-2.compute.amazonaws.com/v1/accounts/tokens"
+TABLE_URL = "http://ec2-54-180-147-209.ap-northeast-2.compute.amazonaws.com/v1/stores/" + STORE_ID + "/tables/" + TABLE_ID + "/tokens"
 ORDER_URL = "http://ec2-54-180-147-209.ap-northeast-2.compute.amazonaws.com/v1/orders"
 
 TOKEN = ""
+TABLE_TOKEN = ""
 TOKEN_ACCESS = FALSE
 
 
@@ -39,12 +44,14 @@ class Application(Frame):
         self.current_menu = []
         self.current_menu_num = []
         self.current_menu_text = StringVar()
+        self.current_menu_id = []
         self.current_page = 0
         self.MAX_PAGE = 0
 
         self.total_menu_num = 0
         self.total_menu_name = []
         self.total_menu_price = []
+        self.menu_id = []
 
         self.display_menu_info_01 = StringVar()
         self.display_menu_info_02 = StringVar()
@@ -62,7 +69,7 @@ class Application(Frame):
         self.master = master
         self.window_settings()
         
-        self.get_menu()
+        self.server_init()
 
         #self.pack()
         self.grid()
@@ -70,13 +77,31 @@ class Application(Frame):
         self.create_widgets()
 
         
-    def get_menu(self):
+    def server_init(self):
+        '''
+            table init.
+        '''
+        global TABLE_TOKEN
+
+        table_headers = {'Authorization': 'Bearer ' + TOKEN}
+        table_response = requests.post(TABLE_URL, headers=table_headers)
+        if (table_response.status_code == 200):
+            temp_table_token = table_response.json()
+            TABLE_TOKEN = temp_table_token['token']
+        
+        print(TABLE_TOKEN)
+
+
+        '''
+            menu_init.
+        '''
         menu_response = requests.get(MENU_LIST_URL)
         menu_json = menu_response.json()
 
 
         for item in menu_json:
             self.total_menu_num += 1
+            self.menu_id.append(item['no'])
             self.total_menu_name.append(item['name'])
             self.total_menu_price.append(str(item['price']))
             #print(menu_text)
@@ -91,6 +116,7 @@ class Application(Frame):
         print(self.MAX_PAGE)
         print(self.total_menu_name)
         print(self.total_menu_price)
+        print(self.menu_id)
 
         return
 
@@ -98,6 +124,8 @@ class Application(Frame):
     def create_widgets(self):
         # image read test.
         #pht = self.read_image()
+
+        jFont = tkinter.font.Font(family="맑은 고딕", size=15, slant="italic")
         
         '''
             menu info init.
@@ -116,38 +144,38 @@ class Application(Frame):
         '''
             8 menu buttons.
         '''
-        self.menu01 = Button(self, compound=TOP, textvariable=self.display_menu_info_01, command=lambda:self.menu_button_cmd(self.total_menu_price[0 + (self.current_page * 8)], self.menu01['text']))
-        self.menu01.config(width=15, height=10)
+        self.menu01 = Button(self, compound=TOP, textvariable=self.display_menu_info_01, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[0 + (self.current_page * 8)], self.menu01['text'], (self.current_page * 8) + 1))
+        self.menu01.config(width=13, height=8)
         #self.menu01.image = pht
 
-        self.menu02 = Button(self, textvariable=self.display_menu_info_02, command=lambda:self.menu_button_cmd(self.total_menu_price[1 + (self.current_page * 8)], self.menu02['text']))
-        self.menu02.config(width=15, height=10)
+        self.menu02 = Button(self, textvariable=self.display_menu_info_02, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[1 + (self.current_page * 8)], self.menu02['text'], (self.current_page * 8) + 2))
+        self.menu02.config(width=13, height=8)
 
-        self.menu03 = Button(self, textvariable=self.display_menu_info_03, command=lambda:self.menu_button_cmd(self.total_menu_price[2 + (self.current_page * 8)], self.menu03['text']))
-        self.menu03.config(width=15, height=10)
+        self.menu03 = Button(self, textvariable=self.display_menu_info_03, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[2 + (self.current_page * 8)], self.menu03['text'], (self.current_page * 8) + 3))
+        self.menu03.config(width=13, height=8)
 
-        self.menu04 = Button(self, textvariable=self.display_menu_info_04, command=lambda:self.menu_button_cmd(self.total_menu_price[3 + (self.current_page * 8)], self.menu04['text']))
-        self.menu04.config(width=15, height=10)
+        self.menu04 = Button(self, textvariable=self.display_menu_info_04, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[3 + (self.current_page * 8)], self.menu04['text'], (self.current_page * 8) + 4))
+        self.menu04.config(width=13, height=8)
 
-        self.menu05 = Button(self, textvariable=self.display_menu_info_05, command=lambda:self.menu_button_cmd(self.total_menu_price[4 + (self.current_page * 8)], self.menu05['text']))
-        self.menu05.config(width=15, height=10)
+        self.menu05 = Button(self, textvariable=self.display_menu_info_05, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[4 + (self.current_page * 8)], self.menu05['text'], (self.current_page * 8) + 5))
+        self.menu05.config(width=13, height=8)
 
-        self.menu06 = Button(self, textvariable=self.display_menu_info_06, command=lambda:self.menu_button_cmd(self.total_menu_price[5 + (self.current_page * 8)], self.menu06['text']))
-        self.menu06.config(width=15, height=10)
+        self.menu06 = Button(self, textvariable=self.display_menu_info_06, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[5 + (self.current_page * 8)], self.menu06['text'], (self.current_page * 8) + 6))
+        self.menu06.config(width=13, height=8)
 
-        self.menu07 = Button(self, textvariable=self.display_menu_info_07, command=lambda:self.menu_button_cmd(self.total_menu_price[6 + (self.current_page * 8)], self.menu07['text']))
-        self.menu07.config(width=15, height=10)
+        self.menu07 = Button(self, textvariable=self.display_menu_info_07, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[6 + (self.current_page * 8)], self.menu07['text'], (self.current_page * 8) + 7))
+        self.menu07.config(width=13, height=8)
 
-        self.menu08 = Button(self, textvariable=self.display_menu_info_08, command=lambda:self.menu_button_cmd(self.total_menu_price[7 + (self.current_page * 8)], self.menu08['text']))
-        self.menu08.config(width=15, height=10)
+        self.menu08 = Button(self, textvariable=self.display_menu_info_08, font=jFont, command=lambda:self.menu_button_cmd(self.total_menu_price[7 + (self.current_page * 8)], self.menu08['text'], (self.current_page * 8) + 8))
+        self.menu08.config(width=13, height=8)
 
 
         '''
             page control widgets.
         '''
-        self.page_down = Button(self, text="<<", command=lambda:self.page_button('0'))
+        self.page_down = Button(self, text="<<", font=jFont, command=lambda:self.page_button('0'))
         self.page_down.config(width=30)
-        self.page_up = Button(self, text=">>", command=lambda:self.page_button('1'))
+        self.page_up = Button(self, text=">>", font=jFont, command=lambda:self.page_button('1'))
         self.page_up.config(width=30)
 
 
@@ -191,7 +219,7 @@ class Application(Frame):
         self.master.resizable(False, False)
 
 
-    def menu_button_cmd(self, value, text):
+    def menu_button_cmd(self, value, text, m_id):
         print(value)
         print(text)
 
@@ -212,10 +240,12 @@ class Application(Frame):
                     self.current_menu_num[idx] += 1
         else:
             self.current_menu.append(text)
+            self.current_menu_id.append(m_id)
             self.current_menu_num.append(1)
 
         print(self.current_menu)
         print(self.current_menu_num)
+        print(self.current_menu_id)
 
         for idx, val in enumerate(self.current_menu):
             temp_str += self.current_menu[idx] + " x " + str(self.current_menu_num[idx]) + "개\n"
@@ -238,20 +268,34 @@ class Application(Frame):
 
     
     def order_button_cmd(self, value):
+        print(TABLE_TOKEN)
+        
         order_dict = {
             "menus": [
-                {
-                    "amount": 1,
-                    "no": 0
-                }
+                
             ],
-            "token": TOKEN
+            "token": TABLE_TOKEN
         }
+
+        for idx in range(len(self.current_menu_id)):
+            temp = {
+                'amount': self.current_menu_num[idx],
+                'no': self.current_menu_id[idx]
+            }
+            order_dict['menus'].append(temp)
+        
+        print(order_dict)
 
         order_data = json.dumps(order_dict)
         headers = {'Content-Type': 'application/json; charset=utf-8'}
 
         order_response = requests.post(ORDER_URL, data=order_data, headers=headers)
+        if (order_response.status_code == 200):
+            messagebox.showinfo("success", "order success")
+            self.refresh_button_cmd('')
+        else:
+            messagebox.showerror("error", "order fail")
+
         print(order_response.text)
 
         return
@@ -318,19 +362,20 @@ class Login(Frame):
     
     def login_form(self):
         self.login_flag.set("False")
+        jFont = tkinter.font.Font(family="맑은 고딕", size=30, slant="italic")
 
-        self.user_id_label = Label(self, text="ID: ").grid(row=0, column=0)
-        self.user_id_entry = Entry(self, textvariable=self.user_id).grid(row=0, column=1)
-        self.password_label = Label(self, text="Password: ").grid(row=1, column=0)
-        self.password_entry = Entry(self, textvariable=self.password, show='*').grid(row=1, column=1)
-        self.login_button = Button(self, text="Login", command=lambda:self.login_button_cmd()).grid(row=4, column=0)
+        self.user_id_label = Label(self, text="ID: ", font=jFont).grid(row=0, column=0)
+        self.user_id_entry = Entry(self, textvariable=self.user_id, font=jFont).grid(row=0, column=1)
+        self.password_label = Label(self, text="Password: ", font=jFont).grid(row=1, column=0)
+        self.password_entry = Entry(self, textvariable=self.password, show='*', font=jFont).grid(row=1, column=1)
+        self.login_button = Button(self, text="Login", font=jFont, command=lambda:self.login_button_cmd()).grid(row=4, column=0)
 
 
         return
 
     
     def login_button_cmd(self):
-
+        global TOKEN
 
         
         local_user_id = self.user_id.get()
@@ -353,7 +398,10 @@ class Login(Frame):
             TOKEN = temp_token['token']
             TOKEN_ACCESS = TRUE
             print(TOKEN)
+            messagebox.showinfo("success", "login success")
             self.master.destroy()
+        else:
+            messagebox.showerror("error", "login fail")
             
         
 
@@ -367,10 +415,16 @@ class Login(Frame):
 
 
 def main():
+    '''
+        login
+    '''
     root_login = Tk()
     login = Login(master=root_login)
     login.mainloop()
 
+    '''
+        main
+    '''
     root = Tk()
     app = Application(master=root)
     app.mainloop()
